@@ -12,17 +12,22 @@ from gurobipy import Model, GRB
 #import matplotlib.pyplot as plt
 
 #Data
-c = [400, 125, 60, 40]
-A = [200, 80, 40, 30]
-b = 5000
-Modes = range(4)
+cost_per_trip = [400, 125, 60, 40]
+ridership_per_trip = [200, 80, 40, 30]
+cost_budget = 5000
+Modes = ["heavy_rail", "light_rail", "brt", "bus"]
+
 
 #Model
 m = Model("ridership")
-trips = m.addVars(Modes, vtype=GRB.CONTINUOUS, obj=c, name="Trips")
+trips = m.addVars(
+    Modes, 
+    vtype=GRB.CONTINUOUS, 
+    obj=cost_per_trip, 
+    name="Trips")
 m.modelSense = GRB.MAXIMIZE
 m.addConstr(
-    sum(A[mode] * trips[mode] for mode in Modes) <= b,
+    sum(ridership_per_trip[i] * trips[mode] for i, mode in enumerate(Modes)) <= cost_budget,
     name="Budget")
 
 m.optimize()
