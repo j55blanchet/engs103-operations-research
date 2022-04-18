@@ -19,6 +19,9 @@ from operator import mul, add
 #Data
 
 iteration_count = 0
+cur_best_obj = 0
+cur_best_vars = []
+cur_best_iteration = -1
 
 def solve_ner_goalkeeping_linear(
     goal_keepers: List[str] = ['DO', 'JB', 'BR', 'JG', 'LJ'],
@@ -29,7 +32,7 @@ def solve_ner_goalkeeping_linear(
     anticipated_values: List[float] = [10, 7, 5, 8, 3],
     pinned_values: Optional[List[Union[float, None]]] = [None, None, None, None, None],
 ):
-    global iteration_count
+    global iteration_count, cur_best_obj, cur_best_vars, cur_best_iteration
     iteration_count += 1
     
     env = gp.Env(empty=True)
@@ -109,11 +112,19 @@ def solve_ner_goalkeeping_linear(
     print(f'Total Salary: {salary:.4} (cap: {salary_cap:.4})')
     print(f'Purchase Price: {purchase_price:.4} (budget: {purchase_budget:.4})')
 
+    is_integer = all([v.x.is_integer() for v in m.getVars()])
+
+    if is_integer and m.objVal > cur_best_obj:
+        cur_best_obj = m.objVal
+        cur_best_vars = [v.x for v in m.getVars()]
+        cur_best_iteration = iteration_count
+        print(f"🌟 Model has integer solution with current best value: {cur_best_obj:.4}")
+    elif is_integer and m.objVal == cur_best_obj:
+        print(f"⭐️ Model has integer solution that ties previous best from iteration {cur_best_iteration}")
+    elif is_integer:
+        print(f"✨ Model has an integer solution, however current best score (of {cur_best_obj:.4}, from iteration {cur_best_iteration}) is not improved.")
+
     return m
-
-
-
-
 
 solve_ner_goalkeeping_linear(pinned_values=[None,  1.0, None, None, None]) # Iteration 1
 solve_ner_goalkeeping_linear(pinned_values=[None,  1.0, None, None, None]) # Iteration 2
@@ -121,8 +132,28 @@ solve_ner_goalkeeping_linear(pinned_values=[None,  0.0, None, None, None]) # Ite
 solve_ner_goalkeeping_linear(pinned_values=[None,  1.0, None, None, 1.0])  # Iteration 4
 solve_ner_goalkeeping_linear(pinned_values=[None,  1.0, None, None, 0.0])  # Iteration 5
 solve_ner_goalkeeping_linear(pinned_values=[1.0,   1.0, None, None, 1.0])  # Iteration 6: Infeasible
-solve_ner_goalkeeping_linear(pinned_values=[0.0,   1.0, None, None, 0.0])  # Iteration 7
+solve_ner_goalkeeping_linear(pinned_values=[0.0,   1.0, None, None, 1.0])  # Iteration 7
 solve_ner_goalkeeping_linear(pinned_values=[None,  0.0, None, 1.0,  None]) # Iteration 8
 solve_ner_goalkeeping_linear(pinned_values=[None,  0.0, None, 0.0,  None]) # Iteration 9
 solve_ner_goalkeeping_linear(pinned_values=[1.0,   0.0, None, 1.0,  None]) # Iteration 10: Infeasible
 solve_ner_goalkeeping_linear(pinned_values=[0.0,   0.0, None, 1.0,  None]) # Iteration 11
+solve_ner_goalkeeping_linear(pinned_values=[1.0,   1.0, None, None, 0.0])  # Iteration 12: Infeasible
+solve_ner_goalkeeping_linear(pinned_values=[0.0,   1.0, None, None, 0.0])  # Iteration 13
+solve_ner_goalkeeping_linear(pinned_values=[0.0,   1.0, None, 1.0, 0.0])   # Iteration 14: Infeasible
+solve_ner_goalkeeping_linear(pinned_values=[0.0,   1.0, None, 0.0, 0.0])   # Iteration 15: A new best integer solution!
+
+solve_ner_goalkeeping_linear(pinned_values=[None,  0.0, 1.0, 0.0, None])   # Iteration 16
+solve_ner_goalkeeping_linear(pinned_values=[None,  0.0, 0.0, 0.0, None])   # Iteration 17: A new best integer solution!
+
+solve_ner_goalkeeping_linear(pinned_values=[1.0,  0.0, 1.0, 0.0, None])   # Iteration 18
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  0.0, 1.0, 0.0, None])   # Iteration 19: A suboptimal integer solution
+
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  1.0, None, 1.0, 1.0])   # Iteration 20: Infeasible
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  1.0, None, 0.0, 1.0])   # Iteration 21
+
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  1.0, 1.0, 0.0, 1.0])   # Iteration 22: Infeasible
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  1.0, 0.0, 0.0, 1.0])   # Iteration 23: A suboptimal integer solution
+
+
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  0.0, 0.0, 1.0, None]) # Iteration 24: A suboptimal integer solution
+solve_ner_goalkeeping_linear(pinned_values=[0.0,  0.0, 1.0, 1.0, None]) # Iteration 25: A suboptimal integer solution
