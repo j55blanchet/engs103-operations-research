@@ -1,0 +1,33 @@
+# City Definitions
+Calgary
+Revelstoke
+Golden
+Edmonton
+Kelowna
+Vancouver
+Prince George
+Prince Rupert
+Blue River
+Lethbridge
+
+# Arcs
+Prince Rupert, Prince George, 308mi
+Prince Rupert, Vancouver, 463mi
+Prince George, Vancouver, 318mi
+Blue River, Prince George, 191mi
+Prince George, Edmonton, 378mi
+Vancouver, Kelowna, 167mi
+Kelowna, Revelstoke, 95mi
+Revelstoke, Golden, 57mi
+Golden, Blue River, 89mi
+Blue River, Edmonton, 265mi
+Edmonton, Calgary, 174mi
+Calgary, Kelowna, 253mi
+Blue River, Vancouver, 257mi
+Lethbridge, Calgary, 107mi
+Lethbridge, Golden, 215mi
+Lethbridge, Revelstoke, 252mi
+Lethbridge, Kelowna, 297mi
+Golden, Edmonton, 213mi
+Golden, Calgary, 129mi
+Revelstoke, Blue River, 90mi
