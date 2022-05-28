@@ -1,0 +1,3 @@
+[submodule "team-project"]
+	path = team-project
+	url = git@github.com:j55blanchet/engs103-teamproj-22s.git
