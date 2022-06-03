@@ -19,6 +19,7 @@ def solve_airline_problem(
 
     iterations_max = 1000,
     flights_offered_convergence_tolerance = 0,
+    verbose=True,
 ):
     # Copying to new arrays
     x = [xi for xi in xi_airline_initial_flights]
@@ -65,7 +66,8 @@ def solve_airline_problem(
 
     for iteration_i in range(iterations_max):
         net_decision_deviation = 0
-        print(f"\tIteration {iteration_i + 1}")
+        if verbose:
+            print(f"\tIteration {iteration_i + 1}")
 
         for i_airline in range(len(x)):
 
@@ -97,41 +99,44 @@ def solve_airline_problem(
             decision_deviation = decision_deviation_flights + decision_deviation_capacity
 
             if decision_deviation > 0:
-                print(f"\t\tAirline {i_airline + 1}", end="")
-                if decision_deviation_flights > 0:
-                    print(f" changed flights {prev_flights}=>{chosen_xi_flights_offered}, ", end="")
-                else:
-                    print(f" remained at {chosen_xi_flights_offered} flights, ", end="")
+                if verbose:
+                    print(f"\t\tAirline {i_airline + 1}", end="")
+                    if decision_deviation_flights > 0:
+                        print(f" changed flights {prev_flights}=>{chosen_xi_flights_offered}, ", end="")
+                    else:
+                        print(f" remained at {chosen_xi_flights_offered} flights, ", end="")
 
-                if decision_deviation_capacity > 0:
-                    print(f"changed capacity {prev_aircraft_size}=>{chosen_si_aircraft_size}.", end="")
-                else:
-                    print(f"remained at {chosen_si_aircraft_size} plane capacity.", end="")
+                    if decision_deviation_capacity > 0:
+                        print(f"changed capacity {prev_aircraft_size}=>{chosen_si_aircraft_size}.", end="")
+                    else:
+                        print(f"remained at {chosen_si_aircraft_size} plane capacity.", end="")
 
                 old_market_share = calculate_market_share(i_airline)
                 new_market_share = calculate_market_share(i_airline, chosen_xi_flights_offered)
-                print(f" Market share {100 * old_market_share:.0f}% => {100 *new_market_share:.0f}%.", end="")
-                print(" Profit: ${:.2f}k".format(max_profit / 1000))
+                if verbose:
+                    print(f" Market share {100 * old_market_share:.0f}% => {100 *new_market_share:.0f}%.", end="")
+                    print(" Profit: ${:.2f}k".format(max_profit / 1000))
 
             net_decision_deviation += decision_deviation
             x[i_airline] = chosen_xi_flights_offered
             s[i_airline] = chosen_si_aircraft_size
         
         if net_decision_deviation <= flights_offered_convergence_tolerance:
-            print(f"\t\t == Converged == ")
-            # print_status("\t")
+            print(f"\t\t == Converged == ({iteration_i+1} iterations)")
+            if not verbose:
+                print_status("\t")
             return x, s, True
 
-        else:
+        elif verbose:
             print("\t\t\tCurrent Status:")
             print_status("\t\t")
     
-    print(f"\tDid not converge")
+    print(f"\tDid not converge after {iterations_max} iterations.")
     print_status("\t")
     return x, s, False
 
 solve_airline_problem()
-print("👆 base problem x=(0, 0), s=(100, 100)")
+print("👆 base problem. Starting values: x=(0, 0), s=(100, 100)")
 print()
 
 for i, (x_start, s_start) in enumerate([
@@ -147,13 +152,14 @@ for i, (x_start, s_start) in enumerate([
 
 
     ([23, 23], [120, 120]),
-    ([15, 15], [80, 80]),5
+    ([15, 15], [80, 80]),
 ]):
     
-    print(f"👇 Variation {i+1}: base problem {x_start=}, {s_start=}")
+    print(f"👇 Variation {i+1}: Starting values: {x_start=}, {s_start=}")
     solve_airline_problem(
         xi_airline_initial_flights = x_start,
         si_airline_initial_aircraft = s_start,
+        verbose=False,
     )
     print()
     print()
